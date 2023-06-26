@@ -42,9 +42,15 @@ namespace Photo_Editor
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
+
+            Frame rootFrame = new Frame();
+            rootFrame.Navigate(typeof(MainPage));
+            m_window.Content = rootFrame;
+
             m_window.Activate();
         }
 
         private Window m_window;
+        public Window Window => m_window;
     }
 }
