@@ -53,9 +53,7 @@ namespace Photo_Editor
             var file = await openPicker.PickSingleFileAsync();
 
             if (file != null)
-                PickedPhoto.Text = file.Name;
-            else
-                PickedPhoto.Text = "Canceled";
+                Frame.Navigate(typeof(EditorPage), file);
         }
     }
 }
