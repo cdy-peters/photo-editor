@@ -12,8 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Devices.SmartCards;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -57,6 +59,42 @@ namespace Photo_Editor
         private void CanvasControl_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
             CanvasDrawingSession ds = args.DrawingSession;
+
+            /// Scale image
+            double windowHeight = this.ActualHeight;
+            double windowWidth = this.ActualWidth;
+            double imageHeight = bitmap.Size.Height;
+            double imageWidth = bitmap.Size.Width;
+            double scaleFactor = 0;
+
+            if (windowHeight < (imageHeight / 0.9))
+            {
+                double scaledHeight = windowHeight * 0.9;
+                scaleFactor = scaledHeight / imageHeight;
+            }
+
+            if (windowWidth < (imageWidth / 0.9))
+            {
+                double scaledWidth = windowWidth * 0.9;
+
+                if (scaleFactor == 0)
+                    scaleFactor = scaledWidth / imageWidth;
+                else
+                    scaleFactor = Math.Min(scaleFactor, scaledWidth / imageWidth);
+            }
+
+            if (scaleFactor > 0)
+            {
+                sender.Width = imageWidth * scaleFactor;
+                sender.Height = imageHeight * scaleFactor;
+                ds.Transform = Matrix3x2.CreateScale((float)scaleFactor);
+            }
+            else
+            {
+                sender.Height = imageHeight;
+                sender.Width = imageWidth;
+            }
+
             ds.DrawImage(bitmap);
 
             sender.Invalidate();
