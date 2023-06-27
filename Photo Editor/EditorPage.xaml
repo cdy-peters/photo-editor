@@ -11,6 +11,17 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <canvas:CanvasControl x:Name="canvasControl" Draw="CanvasControl_Draw" CreateResources="CanvasControl_CreateResources" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="optionsPanel" Grid.Column="0" Padding="10, 10, 20, 0" Background="Gray">
+            <TextBlock Text="Options" />
+        </StackPanel>
+
+        <Grid x:Name="canvasGrid" Grid.Column="1">
+            <canvas:CanvasControl x:Name="canvasControl" Draw="CanvasControl_Draw" CreateResources="CanvasControl_CreateResources" />
+        </Grid>
     </Grid>
 </Page>

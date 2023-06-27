@@ -61,21 +61,21 @@ namespace Photo_Editor
             CanvasDrawingSession ds = args.DrawingSession;
 
             /// Scale image
-            double windowHeight = this.ActualHeight;
-            double windowWidth = this.ActualWidth;
+            double canvasGridHeight = canvasGrid.ActualHeight;
+            double canvasGridWidth = canvasGrid.ActualWidth;
             double imageHeight = bitmap.Size.Height;
             double imageWidth = bitmap.Size.Width;
             double scaleFactor = 0;
 
-            if (windowHeight < (imageHeight / 0.9))
+            if (canvasGridHeight < (imageHeight / 0.9))
             {
-                double scaledHeight = windowHeight * 0.9;
+                double scaledHeight = canvasGridHeight * 0.9;
                 scaleFactor = scaledHeight / imageHeight;
             }
 
-            if (windowWidth < (imageWidth / 0.9))
+            if (canvasGridWidth < (imageWidth / 0.9))
             {
-                double scaledWidth = windowWidth * 0.9;
+                double scaledWidth = canvasGridWidth * 0.9;
 
                 if (scaleFactor == 0)
                     scaleFactor = scaledWidth / imageWidth;
