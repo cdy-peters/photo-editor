@@ -1,4 +1,5 @@
 using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Effects;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Microsoft.UI;
@@ -34,6 +35,7 @@ namespace Photo_Editor
     {
         private StorageFile imageFile;
         private CanvasBitmap bitmap;
+        private ICanvasImage effect;
 
         public EditorPage()
         {
@@ -55,6 +57,8 @@ namespace Photo_Editor
         {
             using IRandomAccessStream stream = await imageFile.OpenReadAsync();
             bitmap = await CanvasBitmap.LoadAsync(sender, stream);
+
+            CreateEffect();
         }
 
         private void CanvasControl_Draw(CanvasControl sender, CanvasDrawEventArgs args)
@@ -96,9 +100,99 @@ namespace Photo_Editor
                 sender.Width = imageWidth;
             }
 
-            ds.DrawImage(bitmap);
+            if (effect == null)
+                ds.DrawImage(bitmap);
+            else
+                ds.DrawImage(effect);
 
             sender.Invalidate();
+        }
+
+        double brightnessVal = 0;
+        double exposureVal = 0;
+        double contrastVal = 0;
+        double highlightsVal = 0;
+        double shadowsVal = 0;
+
+        private void CreateEffect()
+        {
+            effect = bitmap;
+
+            if (brightnessVal != 0)
+                effect = CreateBrightnessEffect(effect);
+            if (exposureVal != 0)
+                effect = CreateExposureEffect(effect);
+            if (contrastVal != 0)
+                effect = CreateContrastEffect(effect);
+            if (highlightsVal != 0 || shadowsVal != 0)
+                effect = CreateHighlightsAndShadowsEffect(effect);
+        }
+
+        private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (sender is Slider slider)
+            {
+                if (slider == brightnessSlider)
+                    brightnessVal = brightnessSlider.Value;
+                else if (slider == exposureSlider)
+                    exposureVal = exposureSlider.Value;
+                else if (slider == contrastSlider)
+                    contrastVal = contrastSlider.Value;
+                else if (slider == highlightsSlider)
+                    highlightsVal = highlightsSlider.Value;
+                else if (slider == shadowsSlider)
+                    shadowsVal = shadowsSlider.Value;
+
+                CreateEffect();
+            }
+            else
+                throw new InvalidOperationException("Slider_ValueChanged expects a Slider object as the sender.");
+        }
+
+        private ICanvasImage CreateBrightnessEffect(ICanvasImage bitmap)
+        {
+            var effect = new BrightnessEffect
+            {
+                Source = bitmap
+            };
+
+            if (brightnessVal > 0)
+                effect.BlackPoint = new Vector2(0, (float)(brightnessVal / 100));
+            else
+                effect.BlackPoint = new Vector2((float)(Math.Abs(brightnessVal) / 100), 0);
+
+            return effect;
+        }
+
+        private ICanvasImage CreateExposureEffect(ICanvasImage bitmap)
+        {
+            var effect = new ExposureEffect
+            {
+                Source = bitmap,
+                Exposure = (float)(exposureVal / 50)
+            };
+            return effect;
+        }
+
+        private ICanvasImage CreateContrastEffect(ICanvasImage bitmap)
+        {
+            var effect = new ContrastEffect
+            {
+                Source = bitmap,
+                Contrast = (float)(contrastVal / 100)
+            };
+            return effect;
+        }
+
+        private ICanvasImage CreateHighlightsAndShadowsEffect(ICanvasImage bitmap)
+        {
+            var effect = new HighlightsAndShadowsEffect
+            {
+                Source = bitmap,
+                Highlights = (float)(highlightsVal / 100),
+                Shadows = (float)(shadowsVal / 100)
+            };
+            return effect;
         }
     }
 }

@@ -24,12 +24,22 @@
                 </Style>
             </StackPanel.Resources>
 
-            <Expander Header="Expander 1">
+            <Expander Header="Light">
                 <StackPanel>
-                    <TextBlock Text="Effect 1" />
-                    <Slider Minimum="0" Maximum="100" />
-                    <TextBlock Text="Effect 2" />
-                    <Slider Minimum="0" Maximum="100" />
+                    <TextBlock Text="Brightness" />
+                    <Slider x:Name="brightnessSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Exposure" />
+                    <Slider x:Name="exposureSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Contrast" />
+                    <Slider x:Name="contrastSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Highlights" />
+                    <Slider x:Name="highlightsSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Shadows" />
+                    <Slider x:Name="shadowsSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
                 </StackPanel>
             </Expander>
         </StackPanel>
