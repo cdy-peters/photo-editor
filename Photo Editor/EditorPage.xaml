@@ -58,6 +58,16 @@
                     <Slider x:Name="hueSlider" Minimum="-180" Maximum="180" ValueChanged="Slider_ValueChanged" />
                 </StackPanel>
             </Expander>
+
+            <Expander Header="Detail">
+                <StackPanel>
+                    <TextBlock Text="Sharpen" />
+                    <Slider x:Name="sharpenSlider" Minimum="0" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Blur" />
+                    <Slider x:Name="blurSlider" Minimum="0" Maximum="100" ValueChanged="Slider_ValueChanged" />
+                </StackPanel>
+            </Expander>
         </StackPanel>
 
         <Grid x:Name="canvasGrid" Grid.Column="1">

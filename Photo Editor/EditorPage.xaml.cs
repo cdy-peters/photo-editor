@@ -118,6 +118,8 @@ namespace Photo_Editor
         float temperatureVal = 0;
         float tintVal = 0;
         float hueVal = 0;
+        float sharpenVal = 0;
+        float blurVal = 0;
 
         private void CreateEffect()
         {
@@ -137,6 +139,10 @@ namespace Photo_Editor
                 effect = CreateTemperatureAndTintEffect(effect);
             if (hueVal != 0)
                 effect = CreateHueRotationEffect(effect);
+            if (sharpenVal != 0)
+                effect = CreateSharpenEffect(effect);
+            if (blurVal != 0)
+                effect = CreateBlurEffect(effect);
         }
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -161,6 +167,10 @@ namespace Photo_Editor
                     tintVal = (float)tintSlider.Value;
                 else if (slider == hueSlider)
                     hueVal = (float)hueSlider.Value;
+                else if (slider == sharpenSlider)
+                    sharpenVal = (float)sharpenSlider.Value;
+                else if (slider == blurSlider)
+                    blurVal = (float)blurSlider.Value;
 
                 CreateEffect();
             }
@@ -244,6 +254,27 @@ namespace Photo_Editor
                 Angle = (float)(((hueVal + 360) % 360) * Math.PI / 180)
             };
 
+            return effect;
+        }
+
+        private ICanvasImage CreateSharpenEffect(ICanvasImage bitmap)
+        {
+            var effect = new SharpenEffect
+            {
+                Source = bitmap,
+                Amount = sharpenVal / 10
+            };
+            return effect;
+        }
+
+        private ICanvasImage CreateBlurEffect(ICanvasImage bitmap)
+        {
+            var effect = new GaussianBlurEffect
+            {
+                Source = bitmap,
+                BlurAmount = blurVal / 10,
+                BorderMode = EffectBorderMode.Hard
+            };
             return effect;
         }
     }
