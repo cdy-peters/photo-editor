@@ -42,6 +42,22 @@
                     <Slider x:Name="shadowsSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
                 </StackPanel>
             </Expander>
+
+            <Expander Header="Color">
+                <StackPanel>
+                    <TextBlock Text="Saturation" />
+                    <Slider x:Name="saturationSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Temperature" />
+                    <Slider x:Name="temperatureSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Tint" />
+                    <Slider x:Name="tintSlider" Minimum="-100" Maximum="100" ValueChanged="Slider_ValueChanged" />
+
+                    <TextBlock Text="Hue" />
+                    <Slider x:Name="hueSlider" Minimum="-180" Maximum="180" ValueChanged="Slider_ValueChanged" />
+                </StackPanel>
+            </Expander>
         </StackPanel>
 
         <Grid x:Name="canvasGrid" Grid.Column="1">

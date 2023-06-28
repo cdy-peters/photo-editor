@@ -17,6 +17,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 using Windows.Devices.SmartCards;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -108,11 +109,15 @@ namespace Photo_Editor
             sender.Invalidate();
         }
 
-        double brightnessVal = 0;
-        double exposureVal = 0;
-        double contrastVal = 0;
-        double highlightsVal = 0;
-        double shadowsVal = 0;
+        float brightnessVal = 0;
+        float exposureVal = 0;
+        float contrastVal = 0;
+        float highlightsVal = 0;
+        float shadowsVal = 0;
+        float saturationVal = 0;
+        float temperatureVal = 0;
+        float tintVal = 0;
+        float hueVal = 0;
 
         private void CreateEffect()
         {
@@ -126,6 +131,12 @@ namespace Photo_Editor
                 effect = CreateContrastEffect(effect);
             if (highlightsVal != 0 || shadowsVal != 0)
                 effect = CreateHighlightsAndShadowsEffect(effect);
+            if (saturationVal != 0)
+                effect = CreateSaturationEffect(effect);
+            if (temperatureVal != 0 || tintVal != 0)
+                effect = CreateTemperatureAndTintEffect(effect);
+            if (hueVal != 0)
+                effect = CreateHueRotationEffect(effect);
         }
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -133,15 +144,23 @@ namespace Photo_Editor
             if (sender is Slider slider)
             {
                 if (slider == brightnessSlider)
-                    brightnessVal = brightnessSlider.Value;
+                    brightnessVal = (float)brightnessSlider.Value;
                 else if (slider == exposureSlider)
-                    exposureVal = exposureSlider.Value;
+                    exposureVal = (float)exposureSlider.Value;
                 else if (slider == contrastSlider)
-                    contrastVal = contrastSlider.Value;
+                    contrastVal = (float)contrastSlider.Value;
                 else if (slider == highlightsSlider)
-                    highlightsVal = highlightsSlider.Value;
+                    highlightsVal = (float)highlightsSlider.Value;
                 else if (slider == shadowsSlider)
-                    shadowsVal = shadowsSlider.Value;
+                    shadowsVal = (float)shadowsSlider.Value;
+                else if (slider == saturationSlider)
+                    saturationVal = (float)saturationSlider.Value;
+                else if (slider == temperatureSlider)
+                    temperatureVal = (float)temperatureSlider.Value;
+                else if (slider == tintSlider)
+                    tintVal = (float)tintSlider.Value;
+                else if (slider == hueSlider)
+                    hueVal = (float)hueSlider.Value;
 
                 CreateEffect();
             }
@@ -156,10 +175,11 @@ namespace Photo_Editor
                 Source = bitmap
             };
 
+            brightnessVal /= 100;
             if (brightnessVal > 0)
-                effect.BlackPoint = new Vector2(0, (float)(brightnessVal / 100));
+                effect.BlackPoint = new Vector2(0, brightnessVal);
             else
-                effect.BlackPoint = new Vector2((float)(Math.Abs(brightnessVal) / 100), 0);
+                effect.BlackPoint = new Vector2(Math.Abs(brightnessVal), 0);
 
             return effect;
         }
@@ -169,7 +189,7 @@ namespace Photo_Editor
             var effect = new ExposureEffect
             {
                 Source = bitmap,
-                Exposure = (float)(exposureVal / 50)
+                Exposure = exposureVal / 50
             };
             return effect;
         }
@@ -179,7 +199,7 @@ namespace Photo_Editor
             var effect = new ContrastEffect
             {
                 Source = bitmap,
-                Contrast = (float)(contrastVal / 100)
+                Contrast = contrastVal / 100
             };
             return effect;
         }
@@ -189,9 +209,41 @@ namespace Photo_Editor
             var effect = new HighlightsAndShadowsEffect
             {
                 Source = bitmap,
-                Highlights = (float)(highlightsVal / 100),
-                Shadows = (float)(shadowsVal / 100)
+                Highlights = highlightsVal / 100,
+                Shadows = shadowsVal / 100
             };
+            return effect;
+        }
+
+        private ICanvasImage CreateSaturationEffect(ICanvasImage bitmap)
+        {
+            var effect = new SaturationEffect
+            {
+                Source = bitmap,
+                Saturation = saturationVal / 200 + 0.5f
+            };
+            return effect;
+        }
+
+        private ICanvasImage CreateTemperatureAndTintEffect(ICanvasImage bitmap)
+        {
+            var effect = new TemperatureAndTintEffect
+            {
+                Source = bitmap,
+                Temperature = temperatureVal / 100,
+                Tint = tintVal / 100
+            };
+            return effect;
+        }
+
+        private ICanvasImage CreateHueRotationEffect(ICanvasImage bitmap)
+        {
+            var effect = new HueRotationEffect
+            {
+                Source = bitmap,
+                Angle = (float)(((hueVal + 360) % 360) * Math.PI / 180)
+            };
+
             return effect;
         }
     }
