@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -56,6 +57,34 @@ namespace Photo_Editor
             var file = await openPicker.PickSingleFileAsync();
             if (file != null)
                 Frame.Navigate(typeof(EditorPage), file);
+        }
+
+        private void StackPanel_DragOver(object sender, DragEventArgs e)
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+            e.DragUIOverride.Caption = "Drop to add file";
+            e.DragUIOverride.IsCaptionVisible = true;
+            e.DragUIOverride.IsContentVisible = true;
+            e.DragUIOverride.IsGlyphVisible = true;
+            e.Handled = true;
+        }
+
+        private async void StackPanel_Drop(object sender, DragEventArgs e)
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                var items = await e.DataView.GetStorageItemsAsync();
+
+                if (items.Count == 1 && items[0] is StorageFile file)
+                {
+                    string extension = file.FileType.ToLower();
+                    if (extension == ".jpg" || extension == ".jpeg" || extension == ".png")
+                    {
+                        if (file != null)
+                            Frame.Navigate(typeof(EditorPage), file);
+                    }
+                }
+            }
         }
     }
 }

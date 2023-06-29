@@ -10,7 +10,8 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+        <!-- TODO: Make drop zone entire page -->
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" AllowDrop="True" DragOver="StackPanel_DragOver" Drop="StackPanel_Drop">
             <Button x:Name="PhotoPicker" Content="Pick a photo" Click="PhotoPicker_Click" />
         </StackPanel>
     </Grid>
