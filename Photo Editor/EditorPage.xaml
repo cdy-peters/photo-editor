@@ -24,6 +24,21 @@
                 </Style>
             </StackPanel.Resources>
 
+            <Expander Header="Filters">
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <Style TargetType="ToggleSwitch">
+                            <Setter Property="OffContent" Value="" />
+                            <Setter Property="OnContent" Value="" />
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <ToggleSwitch x:Name="grayscaleToggleSwitch" Header="Grayscale" Toggled="ToggleSwitch_Toggled" />
+                    <ToggleSwitch x:Name="sepiaToggleSwitch" Header="Sepia" Toggled="ToggleSwitch_Toggled" />
+                    <ToggleSwitch x:Name="invertToggleSwitch" Header="Invert" Toggled="ToggleSwitch_Toggled" />
+                </StackPanel>
+            </Expander>
+
             <Expander Header="Light">
                 <StackPanel>
                     <TextBlock Text="Brightness" />

@@ -109,6 +109,15 @@ namespace Photo_Editor
             sender.Invalidate();
         }
 
+        private enum Filter
+        {
+            None,
+            Grayscale,
+            Sepia,
+            Invert
+        }
+        Filter filter = Filter.None;
+
         float brightnessVal = 0;
         float exposureVal = 0;
         float contrastVal = 0;
@@ -124,6 +133,21 @@ namespace Photo_Editor
         private void CreateEffect()
         {
             effect = bitmap;
+
+            switch (filter)
+            {
+                case Filter.Grayscale:
+                    effect = CreateGrayscaleEffect(effect);
+                    break;
+                case Filter.Sepia:
+                    effect = CreateSepiaEffect(effect);
+                    break;
+                case Filter.Invert:
+                    effect = CreateInvertEffect(effect);
+                    break;
+                default:
+                    break;
+            }
 
             if (brightnessVal != 0)
                 effect = CreateBrightnessEffect(effect);
@@ -143,6 +167,47 @@ namespace Photo_Editor
                 effect = CreateSharpenEffect(effect);
             if (blurVal != 0)
                 effect = CreateBlurEffect(effect);
+        }
+
+        private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch currentToggleSwitch = (ToggleSwitch)sender;
+
+            if (currentToggleSwitch.IsOn)
+            {
+                // Turn off the last applied toggle switch
+                switch (filter)
+                {
+                    case Filter.None:
+                        break;
+                    case Filter.Grayscale:
+                        grayscaleToggleSwitch.IsOn = false;
+                        break;
+                    case Filter.Sepia:
+                        sepiaToggleSwitch.IsOn = false;
+                        break;
+                    case Filter.Invert:
+                        invertToggleSwitch.IsOn = false;
+                        break;
+                    default:
+                        break;
+                }
+
+                // Update the filter based on the current toggle switch
+                if (sender is ToggleSwitch toggleSwitch)
+                {
+                    if (toggleSwitch == grayscaleToggleSwitch)
+                        filter = Filter.Grayscale;
+                    else if (toggleSwitch == sepiaToggleSwitch)
+                        filter = Filter.Sepia;
+                    else if (toggleSwitch == invertToggleSwitch)
+                        filter = Filter.Invert;
+                }
+            }
+            else
+                filter = Filter.None;
+
+            CreateEffect();
         }
 
         private void Slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -176,6 +241,33 @@ namespace Photo_Editor
             }
             else
                 throw new InvalidOperationException("Slider_ValueChanged expects a Slider object as the sender.");
+        }
+
+        private static ICanvasImage CreateGrayscaleEffect(ICanvasImage bitmap)
+        {
+            var effect = new GrayscaleEffect
+            {
+                Source = bitmap
+            };
+            return effect;
+        }
+
+        private static ICanvasImage CreateSepiaEffect(ICanvasImage bitmap)
+        {
+            var effect = new SepiaEffect
+            {
+                Source = bitmap
+            };
+            return effect;
+        }
+
+        private static ICanvasImage CreateInvertEffect(ICanvasImage bitmap)
+        {
+            var effect = new InvertEffect
+            {
+                Source = bitmap
+            };
+            return effect;
         }
 
         private ICanvasImage CreateBrightnessEffect(ICanvasImage bitmap)
