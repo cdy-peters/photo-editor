@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
@@ -21,8 +22,10 @@ using Windows.Devices.Sensors;
 using Windows.Devices.SmartCards;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Graphics.Display;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -214,6 +217,44 @@ namespace Photo_Editor
             sliders.Clear();
 
             CreateEffect();
+        }
+
+        // TODO: If the image was scaled it won't be saved as the original size
+        private async void SaveButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            var fileName = this.imageFile.DisplayName;
+            StorageFile file = await KnownFolders.PicturesLibrary.CreateFileAsync($"{fileName}-Edit.png", CreationCollisionOption.GenerateUniqueName);
+            await CanvasControl_Save(canvasControl, file);
+        }
+
+        private static async Task CanvasControl_Save(CanvasControl canvasControl, StorageFile file)
+        {
+            // Render CanvasControl to a RenderTargetBitmap
+            var renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(canvasControl);
+
+            using IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite);
+
+            // Create a BitmapEncoder for PNG format
+            var bitmapEncoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+
+            // Get pixel data from RenderTargetBitmap
+            var pixels = await renderTargetBitmap.GetPixelsAsync();
+            var pixelBuffer = pixels.ToArray();
+
+            double dpi = 96;
+
+            // Set BitmapEncoder properties
+            bitmapEncoder.SetPixelData(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Premultiplied,
+                (uint)renderTargetBitmap.PixelWidth,
+                (uint)renderTargetBitmap.PixelHeight,
+                dpi, dpi,
+                pixelBuffer
+            );
+
+            await bitmapEncoder.FlushAsync();
         }
 
         private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
