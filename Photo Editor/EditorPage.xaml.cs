@@ -26,6 +26,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.Graphics.Display;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -222,9 +223,29 @@ namespace Photo_Editor
         // TODO: If the image was scaled it won't be saved as the original size
         private async void SaveButton_Clicked(object sender, RoutedEventArgs e)
         {
-            var fileName = this.imageFile.DisplayName;
-            StorageFile file = await KnownFolders.PicturesLibrary.CreateFileAsync($"{fileName}-Edit.png", CreationCollisionOption.GenerateUniqueName);
-            await CanvasControl_Save(canvasControl, file);
+            // Create save picker
+            FileSavePicker savePicker = new()
+            {
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+                DefaultFileExtension = ".png",
+                SuggestedFileName = this.imageFile.DisplayName,
+                FileTypeChoices =
+                {
+                    { "PNG Image", new List<string> { ".png" } }
+                }
+            };
+
+            // Get window handle
+            var window = (Application.Current as App)?.Window as MainWindow;
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+            // Initialize save picker
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hWnd);
+
+            // Save picker
+            StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+                await CanvasControl_Save(canvasControl, file);
         }
 
         private static async Task CanvasControl_Save(CanvasControl canvasControl, StorageFile file)

@@ -33,7 +33,17 @@ namespace Photo_Editor
         private async void PhotoPicker_Click(object sender, RoutedEventArgs e)
         {
             // Create file picker
-            var openPicker = new FileOpenPicker();
+            FileOpenPicker openPicker = new()
+            {
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary,
+                FileTypeFilter =
+                {
+                    { ".jpg" },
+                    { ".jpeg" },
+                    { ".png" }
+                }
+            };
 
             // Get window handle
             var window = (Application.Current as App)?.Window as MainWindow;
@@ -42,16 +52,8 @@ namespace Photo_Editor
             // Initialize file picker
             WinRT.Interop.InitializeWithWindow.Initialize(openPicker, hWnd);
 
-            // Set file picker options
-            openPicker.ViewMode = PickerViewMode.Thumbnail;
-            openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-            openPicker.FileTypeFilter.Add(".jpg");
-            openPicker.FileTypeFilter.Add(".jpeg");
-            openPicker.FileTypeFilter.Add(".png");
-
             // Open picker
             var file = await openPicker.PickSingleFileAsync();
-
             if (file != null)
                 Frame.Navigate(typeof(EditorPage), file);
         }
