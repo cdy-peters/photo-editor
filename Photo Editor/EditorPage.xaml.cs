@@ -169,6 +169,53 @@ namespace Photo_Editor
                 effect = CreateBlurEffect(effect);
         }
 
+        private void DisableLastFilter()
+        {
+            switch (filter)
+            {
+                case Filter.None:
+                    break;
+                case Filter.Grayscale:
+                    grayscaleToggleSwitch.IsOn = false;
+                    break;
+                case Filter.Sepia:
+                    sepiaToggleSwitch.IsOn = false;
+                    break;
+                case Filter.Invert:
+                    invertToggleSwitch.IsOn = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ResetButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            DisableLastFilter();
+            filter = Filter.None;
+
+            Dictionary<Slider, double> sliders = new()
+            {
+                { brightnessSlider, 0 },
+                { exposureSlider, 0 },
+                { contrastSlider, 0 },
+                { highlightsSlider, 0 },
+                { shadowsSlider, 0 },
+                { saturationSlider, 0 },
+                { temperatureSlider, 0 },
+                { tintSlider, 0 },
+                { hueSlider, 0 },
+                { sharpenSlider, 0 },
+                { blurSlider, 0 }
+            };
+
+            foreach (var slider in sliders.Keys)
+                slider.Value = sliders[slider];
+            sliders.Clear();
+
+            CreateEffect();
+        }
+
         private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
             ToggleSwitch currentToggleSwitch = (ToggleSwitch)sender;
@@ -176,22 +223,7 @@ namespace Photo_Editor
             if (currentToggleSwitch.IsOn)
             {
                 // Turn off the last applied toggle switch
-                switch (filter)
-                {
-                    case Filter.None:
-                        break;
-                    case Filter.Grayscale:
-                        grayscaleToggleSwitch.IsOn = false;
-                        break;
-                    case Filter.Sepia:
-                        sepiaToggleSwitch.IsOn = false;
-                        break;
-                    case Filter.Invert:
-                        invertToggleSwitch.IsOn = false;
-                        break;
-                    default:
-                        break;
-                }
+                DisableLastFilter();
 
                 // Update the filter based on the current toggle switch
                 if (sender is ToggleSwitch toggleSwitch)
